@@ -7,7 +7,12 @@ const { Todo } = require('../models/todo')
 
 const todos = [
   { _id: new ObjectID(), text: 'First dummy todo' },
-  { _id: new ObjectID(), text: 'Second dummy todo' },
+  {
+    _id: new ObjectID(),
+    text: 'Second dummy todo',
+    completed: true,
+    completedAt: 11041991
+  },
 ]
 
 beforeEach((done) => {
@@ -94,11 +99,11 @@ describe('GET /todos/:id', () => {
 describe('DELETE /todos/:id', () => {
   it('should remove a todo', (done) => {
     const hexID = todos[1]._id.toHexString()
-    
+
     request(app)
       .delete(`/todos/${hexID}`)
       .expect(200)
-      .expect(res => { 
+      .expect(res => {
         expect(res.body.todo._id).toBe(hexID)
       })
       .end((err, res) => {
@@ -111,7 +116,7 @@ describe('DELETE /todos/:id', () => {
       })
   })
 
-  it('should return 404 if todo not found', (done) => {    
+  it('should return 404 if todo not found', (done) => {
     request(app)
       .delete(`/todos/${new ObjectID().toHexString()}`)
       .expect(404)
@@ -119,10 +124,46 @@ describe('DELETE /todos/:id', () => {
   })
 
   it('should return 404 if object id is invalid', (done) => {
-       request(app)
+    request(app)
       .delete(`/todos/1231441`)
       .expect(404)
       .end(done)
   })
 
+})
+
+describe('PATCH /todos/:id', () => {
+  it('should update the todo', (done) => {
+    const hexID = todos[0]._id.toHexString()
+    const text = 'Expected text updated'
+
+    request(app)
+      .patch(`/todos/${hexID}`)
+      .send({
+        completed: true,
+        text
+      })
+      .expect(200)
+      .expect(res => expect(res.body.todo.text).toBe(text))
+      .end((err, res) => {
+        if (err) return done(err)
+        Todo.findById(hexID)
+          .then(todo => {
+            expect(todo.text).toBe(text)
+            expect(todo.completed).toBe(true)
+            expect(todo.completedAt).not.toBeNull()
+            expect(typeof todo.completedAt).toBe('number')
+            done()
+          })
+          .catch(e => done(e))
+      })
+  })
+
+  it('should update the todo', (done) => {
+    done()
+  })
+
+  it('should update the todo', (done) => {
+    done()
+  })
 })
