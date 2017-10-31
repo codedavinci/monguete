@@ -33,7 +33,7 @@ app.get('/todos/:id', (req, res) => {
       res.status(404).send() :
       res.send({ todo }))
   } else {
-    res.status(400).send()
+    res.status(404).send()
   }
 
 
