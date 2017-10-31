@@ -54,6 +54,30 @@ app.delete('/todos/:id', (req, res) => {
   }
 })
 
+
+app.patch('/todos/:id', (req, res) => {
+  const id = req.params.id
+  const completedAt = null
+
+  const { text, completed } = req.body
+  const hidratedBody = { text, completed, completedAt }
+
+  if(!ObjectID.isValid(id)) return res.status(404).send()
+
+  if(typeof hidratedBody.completed === "boolean" && hidratedBody.completed) {
+    hidratedBody.completedAt = new Date().getTime()
+  } else {
+    hidratedBody.completed = false 
+  }
+ 
+  console.log(hidratedBody)
+
+  Todo.findByIdAndUpdate(id, { $set: hidratedBody }, {new: true })
+    .then(todo => !todo ? res.status(404).send() : res.send({ todo }) )
+    .catch(e => res.status(400).send())
+
+})
+
 app.listen(port, () => console.log(`Running on port ${port}`))
 
 module.exports = { app }
