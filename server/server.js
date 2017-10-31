@@ -74,7 +74,7 @@ app.patch('/todos/:id', (req, res) => {
 
   Todo.findByIdAndUpdate(id, { $set: hidratedBody }, {new: true })
     .then(todo => !todo ? res.status(404).send() : res.send({ todo }) )
-    .catch(e => res.status(400).send())
+    .catch(e => res.status(400).send(e))
 
 })
 
