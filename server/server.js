@@ -30,14 +30,28 @@ app.get('/todos/:id', (req, res) => {
   const id = req.params.id
 
   if (ObjectID.isValid(id)) {
-    Todo.findById(id).then(todo => !todo ?
-      res.status(404).send() :
-      res.send({ todo }))
+    Todo.findById(id)
+      .then(todo =>
+        !todo ?
+          res.status(404).send() :
+          res.send({ todo }))
   } else {
     res.status(404).send()
   }
+})
 
+app.delete('/todos/:id', (req, res) => {
+  const id = req.params.id
 
+  if (ObjectID.isValid(id)) {
+    Todo.findByIdAndRemove(id)
+      .then(todo =>
+        !todo ?
+          res.status(404).send() :
+          res.send({ todo }))
+  } else {
+    res.status(404).send()
+  }
 })
 
 app.listen(port, () => console.log(`Running on port ${port}`))
