@@ -63,19 +63,33 @@ app.patch('/todos/:id', (req, res) => {
   const { text, completed } = req.body
   const hidratedBody = { text, completed, completedAt }
 
-  if(!ObjectID.isValid(id)) return res.status(404).send()
+  if (!ObjectID.isValid(id)) return res.status(404).send()
 
-  if(typeof hidratedBody.completed === "boolean" && hidratedBody.completed) {
+  if (typeof hidratedBody.completed === "boolean" && hidratedBody.completed) {
     hidratedBody.completedAt = new Date().getTime()
   } else {
-    hidratedBody.completed = false 
+    hidratedBody.completed = false
   }
 
-  Todo.findByIdAndUpdate(id, { $set: hidratedBody }, {new: true })
-    .then(todo => !todo ? res.status(404).send() : res.send({ todo }) )
+  Todo.findByIdAndUpdate(id, { $set: hidratedBody }, { new: true })
+    .then(todo => !todo ? res.status(404).send() : res.send({ todo }))
     .catch(e => res.status(400).send(e))
 
 })
+
+
+
+app.post('/users', (req, res) => {
+  const { email, password } = req.body
+  const user = new User({ email, password })
+
+  user.save()
+    .then(() => user.generateAuthToken())
+    .then(token => res.header('x-auth', token).send(user))
+    .catch(e => res.status(400).send(e))
+})
+
+
 
 app.listen(port, () => console.log(`Running on port ${port}`))
 
