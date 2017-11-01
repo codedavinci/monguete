@@ -95,7 +95,7 @@ app.get('/users/me', authenticate , (req, res) => {
   res.send(req.user)
 })
 
-1
+
 app.post('/users/login', (req, res) => {
    const { email, password} = req.body
    
